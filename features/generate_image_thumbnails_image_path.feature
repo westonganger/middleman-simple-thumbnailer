@@ -16,7 +16,10 @@ Feature: Generate image thumbnails with image path
   Scenario: Generate base64 thumbnail of image with resize_to param given
     Given the Server is running at "basic-app-image-path"
     When I go to "/page-with-images-to-resize.html"
-    Then I should see base64ed thumbnails and srcset of the images
+    Then I should see urls for the following cached thumbnails:
+      | type | size   | class   | relative |
+      | img  | 10x10> | 10x10gt | false    |
+      | img  | 5x5    | 5x5     | false    |
 
   Scenario: After build server resized images
     Given a fixture app "basic-app-image-path"
@@ -28,7 +31,7 @@ Feature: Generate image thumbnails with image path
       | images/original.5x5.jpg     |  5x2       |
       | images/original.20x20.jpg   | 20x9       |
       | images/original.15x15.jpg   | 15x7       |
-    And the file "page-with-images-to-resize.html" should contain '<img src="/images/original.10x10gt.jpg" class="image-resized-to10x10" alt="Original.10x10gt" />'
+    And the file "page-with-images-to-resize.html" should contain '<img src="/images/original.10x10gt.jpg" class="image-resized-to10x10gt" alt="Original.10x10gt" />'
     And the file "page-with-images-to-resize.html" should contain '<source srcset="/images/original.20x20.jpg" media="(min-width: 900px)">'
     And the file "page-with-images-to-resize.html" should contain '<img src="/images/original.5x5.jpg" class="image-resized-to5x5" alt="Original.5x5" />'
     And the file "page-with-images-to-resize.html" should contain '<source srcset="/images/original.15x15.jpg" media="(min-width: 900px)">'
