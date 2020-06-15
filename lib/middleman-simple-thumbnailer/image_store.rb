@@ -9,16 +9,18 @@ module MiddlemanSimpleThumbnailer
     end
 
     def store(img_path, resize_to)
-      File.open(@tmp_path, File::RDWR|File::CREAT, 0644) do |f|
-        f.flock(File::LOCK_EX)
-        resized_images = f.size > 0 ? Marshal.load(f) : {}
-        file_key = "#{img_path}.#{resize_to}"
-        if ! resized_images.has_key?(file_key)
-          resized_images[file_key] = [img_path, resize_to]
-          f.rewind
-          Marshal.dump(resized_images,f)
-          f.flush
-          f.truncate(f.pos)
+      if File.exist?(@tmp_path)
+        File.open(@tmp_path, File::RDWR|File::CREAT, 0644) do |f|
+          f.flock(File::LOCK_EX)
+          resized_images = f.size > 0 ? Marshal.load(f) : {}
+          file_key = "#{img_path}.#{resize_to}"
+          if ! resized_images.has_key?(file_key)
+            resized_images[file_key] = [img_path, resize_to]
+            f.rewind
+            Marshal.dump(resized_images,f)
+            f.flush
+            f.truncate(f.pos)
+          end
         end
       end
     end
@@ -34,7 +36,9 @@ module MiddlemanSimpleThumbnailer
     end
 
     def delete
-      File.delete(@tmp_path)
+      if File.exist?(@tmp_path)
+        File.delete(@tmp_path)
+      end
     end
 
   end
