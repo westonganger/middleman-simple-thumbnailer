@@ -26,11 +26,13 @@ module MiddlemanSimpleThumbnailer
     end
 
     def each
-      File.open(@tmp_path, "r") do |f|
-        f.flock(File::LOCK_SH)
-        resized_images = f.size > 0 ? Marshal.load(f) : {}
-        resized_images.values.each do |store_entry|
-          yield *store_entry
+      if File.exist?(@tmp_path)
+        File.open(@tmp_path, "r") do |f|
+          f.flock(File::LOCK_SH)
+          resized_images = f.size > 0 ? Marshal.load(f) : {}
+          resized_images.values.each do |store_entry|
+            yield *store_entry
+          end
         end
       end
     end
